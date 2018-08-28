@@ -1,0 +1,15 @@
+{
+  "name": "@lucamonfredo/johnnymnemonic",
+  "version": "0.0.0",
+  "description": "Ultra easy and lightweight autocomplete input for React",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "autocomplete",
+    "react"
+  ],
+  "author": "Luca Monfredo <luca@monfredo.it>",
+  "license": "MIT"
+}
