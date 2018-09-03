@@ -1,8 +1,9 @@
 import typescript from 'rollup-plugin-typescript2'
+import { terser } from 'rollup-plugin-terser'
 import pkg from './package.json'
 
 export default {
-  input: 'src/index.tsx',
+  input: 'src/lib/index.tsx',
   output: [
     {
       file: pkg.main,
@@ -17,9 +18,16 @@ export default {
     ...Object.keys(pkg.dependencies || {}),
     ...Object.keys(pkg.peerDependencies || {}),
   ],
-plugins: [
+  plugins: [
     typescript({
       typescript: require('typescript'),
+      include: ["src/*.ts+(|x)", "src/**/*.ts+(|x)"],
+      exclude: ["src/example/**/*", "*.d.ts", "**/*.d.ts"],
+      tsconfigOverride: {
+        compilerOptions: { rootDir: './src/lib' },
+        exclude: ['node_modules', 'src/example']
+      },
     }),
+    terser(),
   ],
 }
