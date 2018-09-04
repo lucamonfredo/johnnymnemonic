@@ -1,9 +1,10 @@
 import typescript from 'rollup-plugin-typescript2'
-import babel from 'rollup-plugin-babel';
-import nodeResolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import json from 'rollup-plugin-json';
-import replace from 'rollup-plugin-replace';
+import babel from 'rollup-plugin-babel'
+import nodeResolve from 'rollup-plugin-node-resolve'
+import commonjs from 'rollup-plugin-commonjs'
+import json from 'rollup-plugin-json'
+import replace from 'rollup-plugin-replace'
+import sass from 'rollup-plugin-sass'
 
 export default {
   input: 'src/example/index.tsx',
@@ -39,6 +40,9 @@ export default {
     babel({
       babelrc: false,
       presets: [['@babel/preset-env', { modules: false }], '@babel/preset-react'],
+    }),
+    sass({
+      insert: true,
     }),
     replace({
       'process.env.NODE_ENV': JSON.stringify('production'),

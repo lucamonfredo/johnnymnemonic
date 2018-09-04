@@ -1,5 +1,7 @@
 import typescript from 'rollup-plugin-typescript2'
 import { terser } from 'rollup-plugin-terser'
+// import collectSass from 'rollup-plugin-collect-sass'
+import sass from 'rollup-plugin-sass';
 import pkg from './package.json'
 
 export default {
@@ -27,6 +29,12 @@ export default {
         compilerOptions: { rootDir: './src/lib' },
         exclude: ['node_modules', 'src/example']
       },
+    }),
+    // collectSass({
+    //   extract: true,
+    // }),
+    sass({
+      insert: true,
     }),
     terser(),
   ],
