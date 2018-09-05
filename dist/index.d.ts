@@ -1,12 +1,9 @@
 import * as React from 'react';
 import './index.scss';
-interface Props {
+interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     suggestionFunction: (value: string) => Promise<string[]>;
     debounceTimeout?: number;
-    className?: string;
-    placeholder?: string;
-    required?: boolean;
 }
 interface State {
     value: string;

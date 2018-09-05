@@ -9,7 +9,9 @@ npm i @lucamonfredo/johnnymnemonic
 # Usage
 ```
 <JohnnyMnemonic
-  onChange={...} // onChange callback
-  suggestionFunction={...} // a Promise that returns a string[]
+  onChange={...} // onChange callback, required
+  suggestionFunction={...} // a Promise that returns a string[], required
+  debounceTimeout={...} // number of msec to debounce suggestionFunc, optional
+  ... // all other input props, optional
 />
 ```

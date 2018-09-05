@@ -1,13 +1,10 @@
 import * as React from 'react'
 import './index.scss'
 
-interface Props {
+interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   suggestionFunction: (value: string) => Promise<string[]>
   debounceTimeout?: number
-  className?: string
-  placeholder?: string
-  required?: boolean
 }
 
 interface State {
@@ -98,37 +95,29 @@ class JohnnyMnemonic extends React.Component<Props, State> {
     return (
       <React.Fragment>
         <input
+          {...this.props}
           ref={this.inputRef}
-          type="text"
+          type={this.props.type || 'text'}
           className={`johnnymnemonic input ${this.props.className || ''}`}
           value={this.state.value}
           onChange={this.onChange}
-          placeholder={this.props.placeholder || undefined}
-          required={this.props.required || undefined}
-        >
-        </input>
-        {
-          this.state.loading
-            ? (
-              <div className="johnnymnemonic la-ball-scale la-sm">
-                <div></div>
-              </div>
-            )
-            : null
-        }
-        {
-          this.state.suggestions.length > 0
-            ? (
-              <ul ref={this.ulRef} className="johnnymnemonic suggestion-list">
-                {
-                  this.state.suggestions.map(suggestion => (
-                    <li onClick={this.onSuggestionClick} data-value={suggestion}>{suggestion}</li>
-                  ))
-                }
-              </ul>
-            )
-            : null
-        }
+        />
+
+        {this.state.loading ? (<div className="johnnymnemonic la-ball-scale la-sm"><div></div></div>) : null}
+
+        {this.state.suggestions.length > 0 ? (
+          <ul
+            ref={this.ulRef}
+            className="johnnymnemonic suggestion-list"
+          >
+            {this.state.suggestions.map(suggestion => (
+              <li
+                onClick={this.onSuggestionClick}
+                data-value={suggestion}>{suggestion}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </React.Fragment>
     )
   }
