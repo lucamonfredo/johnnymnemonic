@@ -1,7 +1,12 @@
 {
   "name": "@lucamonfredo/johnnymnemonic",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Ultra easy and lightweight autocomplete input for React",
+  "homepage": "https://github.com/lucamonfredo/johnnymnemonic",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lucamonfredo/johnnymnemonic.git"
+  },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "files": [
