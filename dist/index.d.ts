@@ -17,7 +17,13 @@ interface State {
     lastOnChangeEvent: React.ChangeEvent<HTMLInputElement> | null;
 }
 declare class JohnnyMnemonic extends React.Component<Props, State> {
+    private inputRef;
+    private ulRef;
     constructor(props: Props);
+    componentDidMount(): void;
+    componentWillUnmount(): void;
+    private manageFocus;
+    private manageKeyDown;
     private onChange;
     private onSuggestionClick;
     render(): JSX.Element;

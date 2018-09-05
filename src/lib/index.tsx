@@ -21,6 +21,9 @@ interface State {
 
 class JohnnyMnemonic extends React.Component<Props, State> {
 
+  private inputRef: React.RefObject<HTMLInputElement>
+  private ulRef: React.RefObject<HTMLUListElement>
+
   public constructor(props: Props) {
     super(props)
     this.state = {
@@ -31,16 +34,43 @@ class JohnnyMnemonic extends React.Component<Props, State> {
       debounceTimeout: props.debounceTimeout || 250,
       lastOnChangeEvent: null
     }
+    this.inputRef = React.createRef()
+    this.ulRef = React.createRef()
     this.onChange = this.onChange.bind(this)
     this.onSuggestionClick = this.onSuggestionClick.bind(this)
+    this.manageFocus = this.manageFocus.bind(this)
+    this.manageKeyDown = this.manageKeyDown.bind(this)
+  }
+
+  public componentDidMount() {
+    document.addEventListener('click', this.manageFocus)
+    document.addEventListener('keydown', this.manageKeyDown)
+  }
+
+  public componentWillUnmount() {
+    document.removeEventListener('click', this.manageFocus)
+    document.removeEventListener('keydown', this.manageKeyDown)
+  }
+
+  private manageFocus() {
+    const activeElement = document.activeElement
+    const inputElement = this.inputRef.current
+    const ulElement = this.ulRef.current
+    if (activeElement !== inputElement || activeElement !== ulElement) {
+      this.setState({ suggestions: [] })
+    }
+  }
+
+  private manageKeyDown(event: KeyboardEvent) {
+    if (event.keyCode === 9) this.setState({ suggestions: [] })
   }
 
   private async onChange(event: React.ChangeEvent<HTMLInputElement>) {
     event.persist()
     const value = event.target.value
+    const now = Date.now()
     this.setState({ value, lastOnChangeEvent: event })
     this.props.onChange(event)
-    const now = Date.now()
     if (value && ((now - this.state.lastCall) > this.state.debounceTimeout)) {
       this.setState({ lastCall: Date.now(), loading: true })
       try {
@@ -68,6 +98,7 @@ class JohnnyMnemonic extends React.Component<Props, State> {
     return (
       <React.Fragment>
         <input
+          ref={this.inputRef}
           type="text"
           className={`johnnymnemonic input ${this.props.className || ''}`}
           value={this.state.value}
@@ -88,7 +119,7 @@ class JohnnyMnemonic extends React.Component<Props, State> {
         {
           this.state.suggestions.length > 0
             ? (
-              <ul className="johnnymnemonic suggestion-list">
+              <ul ref={this.ulRef} className="johnnymnemonic suggestion-list">
                 {
                   this.state.suggestions.map(suggestion => (
                     <li onClick={this.onSuggestionClick} data-value={suggestion}>{suggestion}</li>
