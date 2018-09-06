@@ -4,15 +4,15 @@ import './index.scss'
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   suggestionFunction: (value: string) => Promise<string[]>
-  debounceTimeout?: number
+  suggestionFuncDelay?: number
 }
 
 interface State {
   value: string
   suggestions: string[]
+  suggestionFuncDelay: number
+  suggestionFuncTimeout: NodeJS.Timer | null
   loading: boolean
-  lastCall: number | null
-  debounceTimeout: number
   lastOnChangeEvent: React.ChangeEvent<HTMLInputElement> | null
 }
 
@@ -26,10 +26,10 @@ class JohnnyMnemonic extends React.Component<Props, State> {
     this.state = {
       value: '',
       suggestions: [],
+      suggestionFuncDelay: props.suggestionFuncDelay || 250,
+      suggestionFuncTimeout: null,
       loading: false,
-      lastCall: Date.now(),
-      debounceTimeout: props.debounceTimeout || 250,
-      lastOnChangeEvent: null
+      lastOnChangeEvent: null,
     }
     this.inputRef = React.createRef()
     this.ulRef = React.createRef()
@@ -37,6 +37,8 @@ class JohnnyMnemonic extends React.Component<Props, State> {
     this.onSuggestionClick = this.onSuggestionClick.bind(this)
     this.manageFocus = this.manageFocus.bind(this)
     this.manageKeyDown = this.manageKeyDown.bind(this)
+    this.fetchSuggestions = this.fetchSuggestions.bind(this)
+    this.manageTimeout = this.manageTimeout.bind(this)
   }
 
   public componentDidMount() {
@@ -47,6 +49,24 @@ class JohnnyMnemonic extends React.Component<Props, State> {
   public componentWillUnmount() {
     document.removeEventListener('click', this.manageFocus)
     document.removeEventListener('keydown', this.manageKeyDown)
+  }
+
+  private async fetchSuggestions() {
+    if (this.state.value) {
+      this.setState({ loading: true })
+      try {
+        const suggestions = await this.props.suggestionFunction(this.state.value)
+        this.setState({ suggestions, loading: false })
+      } catch (error) {
+        this.setState({ suggestions: [], loading: false })
+        console.error(error)
+      }
+    }
+  }
+
+  private manageTimeout() {
+    if (this.state.suggestionFuncTimeout) { clearTimeout(this.state.suggestionFuncTimeout) }
+    this.setState({ suggestionFuncTimeout: setTimeout(this.fetchSuggestions, this.state.suggestionFuncDelay)})
   }
 
   private manageFocus() {
@@ -65,21 +85,10 @@ class JohnnyMnemonic extends React.Component<Props, State> {
   private async onChange(event: React.ChangeEvent<HTMLInputElement>) {
     event.persist()
     const value = event.target.value
-    const now = Date.now()
     this.setState({ value, lastOnChangeEvent: event })
     this.props.onChange(event)
-    if (value && ((now - this.state.lastCall) > this.state.debounceTimeout)) {
-      this.setState({ lastCall: Date.now(), loading: true })
-      try {
-        const suggestions = await this.props.suggestionFunction(value)
-        this.setState({ suggestions, loading: false })
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    if (!this.state.value) {
-      this.setState({ suggestions: [] })
-    }
+    this.manageTimeout()
+    if (!this.state.value) { this.setState({ suggestions: [] })}
   }
 
   private onSuggestionClick(event: React.SyntheticEvent<HTMLLIElement>) {

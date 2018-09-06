@@ -11,7 +11,7 @@ npm i @lucamonfredo/johnnymnemonic
 <JohnnyMnemonic
   onChange={...} // onChange callback, required
   suggestionFunction={...} // a Promise that returns a string[], required
-  debounceTimeout={...} // number of msec to debounce suggestionFunc, optional
+  suggestionFuncTimeout={...} // number of msec to debounce suggestionFunc, optional
   ... // all other input props, optional
 />
 ```
