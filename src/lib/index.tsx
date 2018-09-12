@@ -101,6 +101,7 @@ class JohnnyMnemonic extends React.Component<Props, State> {
   }
 
   public render() {
+    console.log('render props', 'props', this.props.value, 'state', this.state.value)
     return (
       <React.Fragment>
         <input
@@ -108,7 +109,7 @@ class JohnnyMnemonic extends React.Component<Props, State> {
           ref={this.inputRef}
           type={this.props.type || 'text'}
           className={`johnnymnemonic input ${this.props.className || ''}`}
-          value={this.state.value}
+          value={this.state.value || this.props.value || ''}
           onChange={this.onChange}
         />
 
