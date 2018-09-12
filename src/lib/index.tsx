@@ -101,7 +101,6 @@ class JohnnyMnemonic extends React.Component<Props, State> {
   }
 
   public render() {
-    console.log('render props', 'props', this.props.value, 'state', this.state.value)
     return (
       <React.Fragment>
         <input
