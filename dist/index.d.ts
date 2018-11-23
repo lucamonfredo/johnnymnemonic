@@ -12,6 +12,7 @@ interface State {
     suggestionFuncDelay: number;
     suggestionFuncTimeout: NodeJS.Timer | null;
     loading: boolean;
+    focused: boolean;
     lastOnChangeEvent: React.ChangeEvent<HTMLInputElement> | null;
 }
 declare class JohnnyMnemonic extends React.Component<Props, State> {
@@ -25,6 +26,8 @@ declare class JohnnyMnemonic extends React.Component<Props, State> {
     private manageFocus;
     private manageKeyDown;
     private onChange;
+    private onInputFocus;
+    private onInputBlur;
     private onSuggestionClick;
     render(): JSX.Element;
 }
