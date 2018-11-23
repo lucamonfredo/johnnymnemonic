@@ -13,6 +13,7 @@ interface State {
   suggestionFuncDelay: number
   suggestionFuncTimeout: NodeJS.Timer | null
   loading: boolean
+  focused: boolean
   lastOnChangeEvent: React.ChangeEvent<HTMLInputElement> | null
 }
 
@@ -29,11 +30,14 @@ class JohnnyMnemonic extends React.Component<Props, State> {
       suggestionFuncDelay: props.suggestionFuncDelay || 250,
       suggestionFuncTimeout: null,
       loading: false,
+      focused: false,
       lastOnChangeEvent: null,
     }
     this.inputRef = React.createRef()
     this.ulRef = React.createRef()
     this.onChange = this.onChange.bind(this)
+    this.onInputFocus = this.onInputFocus.bind(this)
+    this.onInputBlur = this.onInputBlur.bind(this)
     this.onSuggestionClick = this.onSuggestionClick.bind(this)
     this.manageFocus = this.manageFocus.bind(this)
     this.manageKeyDown = this.manageKeyDown.bind(this)
@@ -56,7 +60,11 @@ class JohnnyMnemonic extends React.Component<Props, State> {
       this.setState({ loading: true })
       try {
         const suggestions = await this.props.suggestionFunction(this.state.value)
-        this.setState({ suggestions, loading: false })
+        this.setState(currentState => ({
+          ...currentState,
+          suggestions: currentState.focused ? suggestions : [],
+          loading: false
+        }))
       } catch (error) {
         this.setState({ suggestions: [], loading: false })
         console.error(error)
@@ -91,6 +99,14 @@ class JohnnyMnemonic extends React.Component<Props, State> {
     if (!this.state.value) { this.setState({ suggestions: [] })}
   }
 
+  private onInputFocus() {
+    this.setState({ focused: true })
+  }
+
+  private onInputBlur() {
+    this.setState({ focused: false })
+  }
+
   private onSuggestionClick(event: React.SyntheticEvent<HTMLLIElement>) {
     event.persist()
     const value = event.currentTarget.dataset.value
@@ -110,6 +126,8 @@ class JohnnyMnemonic extends React.Component<Props, State> {
           className={`johnnymnemonic input ${this.props.className || ''}`}
           value={this.state.value || this.props.value || ''}
           onChange={this.onChange}
+          onFocus={this.onInputFocus}
+          onBlur={this.onInputBlur}
         />
 
         {this.state.loading ? (<div className="johnnymnemonic la-ball-scale la-sm"><div></div></div>) : null}
